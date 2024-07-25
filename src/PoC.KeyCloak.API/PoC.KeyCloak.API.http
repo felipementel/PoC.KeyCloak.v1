@@ -1,0 +1,6 @@
+@PoC.KeyCloak.API_HostAddress = http://localhost:5233
+
+GET {{PoC.KeyCloak.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -2,6 +2,13 @@
 
 ![banner](./docs/img/banner.png)
 
+
+## Pré requisito
+
+- Docker e Docker compose
+- .NET 8 SDK
+
+
 - Criação do Realm
 
 - Menu: Client

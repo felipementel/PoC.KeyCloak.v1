@@ -2,33 +2,33 @@
 
 ![banner](./docs/img/banner.png)
 
-
 ## Pré requisito
 
-- Docker e Docker compose
-- .NET 8 SDK
+- Docker
+- Docker compose
+- .NET 9 SDK
 
+## Passo a passo
 
 - Criação do Realm
 
 - Menu: Client
-  
+
   Criar o Client \* Deixar o "Client Authentication" Marcado
 
 - Menu: Client scopes
-  
+
   Criar um novo scope \* Deixar o "Include in token scope" marcado
 
   - Mappers - Configure new mapper
-    
   - Selecionar o "Audience" e depois coloque um nome
 
 - Voltar na tela do "Clients" depois clicar na aba "Client scopes" e depois no botão "Add client scope"
 
 - Menu User
-  
+
   Criar um novo User
-  
+
   Clicar no user criado, aba Credentials, criar uma senha. Não deixar marcado a aba Temporary
 
 ```curl

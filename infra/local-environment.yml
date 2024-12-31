@@ -6,11 +6,27 @@
 # Para verificar o health e metrics do keycloak, acesse:
 # http://localhost:9000/health/ready
 # http://localhost:9000/metrics/application
+# Para acessar o pgAdmin, acesse:
+# http://localhost:8090
+# Para acessar o banco de dados, utilize:
+# Host: docker inspect postgres-container | grep Gateway
+# Port: 5432
+# Database: keycloakDB
+# User: userKeyCloak
+# Password: ${POSTGRES_PASSWORD}
+
+# Para acessar o Keycloak, acesse:
+# http://localhost:8080
+# User: admin
+# Password: ${KEYCLOAK_ADMIN_PASSWORD}
+
+# docker compose -f infra/local-environment.yml up -d
+# docker compose -f infra/local-environment.yml down --remove-orphans
 
 services:
   postgres-service:
     container_name: postgres-container
-    image: postgres:16.3
+    image: postgres:17.2
     restart: always
     environment:
       POSTGRES_USER: userKeyCloak
@@ -38,7 +54,7 @@ services:
 
   pgadmin-service:
     container_name: pgadmin-container
-    image: dpage/pgadmin4:8.4
+    image: dpage/pgadmin4:8.14.0
     depends_on:
       - postgres-service
     environment:
@@ -59,7 +75,7 @@ services:
     depends_on:
       postgres-service:
         condition: service_healthy
-    image: quay.io/keycloak/keycloak:25.0.2
+    image: quay.io/keycloak/keycloak:26.0.7
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}

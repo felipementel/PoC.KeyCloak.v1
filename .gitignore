@@ -4,7 +4,7 @@
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
 #Felipe Augusto [https://www.youtube.com/@D.E.P.L.O.Y]
-/infra/data/*
+/docker/data/*
 
 # User-specific files
 *.rsuser

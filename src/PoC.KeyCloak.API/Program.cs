@@ -1,7 +1,36 @@
+using Asp.Versioning;
 using Keycloak.AuthServices.Authentication;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using PoC.KeyCloak.API.Endpoints.v1;
+using Scalar.AspNetCore;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
+
+//builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddRouting(opt =>
+{
+    opt.LowercaseUrls = true;
+    opt.LowercaseQueryStrings = true;
+});
+
+builder.Services.AddApiVersioning(options =>
+{
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.ReportApiVersions = true;
+})
+    .AddApiExplorer(options =>
+    {
+        options.GroupNameFormat = "'v'VVV";
+        options.SubstituteApiVersionInUrl = true;
+    });
+
+builder.Services.AddOpenApi();
+
+
 
 // Add services to the container.
 builder.Services.AddKeycloakWebApiAuthentication(builder.Configuration.GetSection(KeycloakAuthenticationOptions.Section), options =>
@@ -19,29 +48,40 @@ builder.Services.AddKeycloakWebApiAuthentication(builder.Configuration.GetSectio
     };
 });
 
-//builder.Services.AddKeycloakWebApiAuthentication(builder.Configuration, options =>
-//{
-//    options.RequireHttpsMetadata = false;
-//});
-
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.MapOpenApi();
+    app.MapScalarApiReference();
+}
+else
+{
+    app.UseHttpsRedirection();
 }
 
-app.UseHttpsRedirection();
+app.MapWeatherForecastEndpoints();
 
+var versionSetPing = app.NewApiVersionSet("Ping")
+                    .Build();
+app
+    .MapGet("/ping", () =>
+    {
+        return TypedResults.Ok(Assembly.GetExecutingAssembly().GetName().Version.ToString());
+    }).WithOpenApi(operation => new(operation)
+    {
+        OperationId = "get-ping-get"
+    })
+.WithApiVersionSet(versionSetPing)
+.RequireAuthorization()
+.Produces<string>(200);
+
+
+
+app.UseAuthentication();
 app.UseAuthorization();
-
-app.MapControllers();
 
 await app.RunAsync();

@@ -1,3 +1,5 @@
+# docker build -t felipementel/keycloak-v1 -f src/PoC.KeyCloak.API/Dockerfile ./src
+# docker container run --rm --name keycloak-deploy -u app -p 7453:8080 -e ASPNETCORE_ENVIRONMENT=Development felipementel/keycloak-v1
 # sudo mkdir -p ./data/postgres-keycloak
 # sudo mkdir -p ./data/pgadmin-keycloak
 # sudo chown -R 999:999 ./data/postgres-keycloak
@@ -20,10 +22,25 @@
 # User: admin
 # Password: ${KEYCLOAK_ADMIN_PASSWORD}
 
-# docker compose -f infra/local-environment.yml up -d
-# docker compose -f infra/local-environment.yml down --remove-orphans
+# docker compose -f docker/local-environment.yml up -d
+# docker compose -f docker/local-environment.yml down --remove-orphans
 
 services:
+  app-service:
+    build:
+      context: ../src/
+      dockerfile: ../src/PoC.KeyCloak.API/Dockerfile
+    image: felipementel/keycloak-v1
+    container_name: keycloak-deploy
+    restart: unless-stopped
+    user: app
+    ports:
+      - 7453:8080
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+    depends_on:
+      - keycloak-service
+
   postgres-service:
     container_name: postgres-container
     image: postgres:17.2

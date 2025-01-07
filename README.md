@@ -2,11 +2,10 @@
 
 ![banner](./docs/img/banner.png)
 
-## Pré requisito
-
-- Docker
-- Docker compose
-- .NET 9 SDK
+> [!NOTE]
+> Docker
+> Docker compose
+> .NET 9 SDK
 
 ## Passo a passo
 

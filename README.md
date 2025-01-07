@@ -4,7 +4,9 @@
 
 > [!NOTE]
 > Docker
+>
 > Docker compose
+>
 > .NET 9 SDK
 
 ## Passo a passo

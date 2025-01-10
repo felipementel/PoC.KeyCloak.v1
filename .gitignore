@@ -5,6 +5,8 @@
 
 #Felipe Augusto [https://www.youtube.com/@D.E.P.L.O.Y]
 /docker/data/*
+/docker/.env
+
 
 # User-specific files
 *.rsuser

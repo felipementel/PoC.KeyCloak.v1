@@ -1,15 +1,20 @@
 # docker build -t felipementel/keycloak-v1 -f src/PoC.KeyCloak.API/Dockerfile ./src
-# docker container run --rm --name keycloak-deploy -u app -p 7453:8080 -e ASPNETCORE_ENVIRONMENT=Development felipementel/keycloak-v1
+# docker container run --rm --name keycloak-deploy -u app -e ASPNETCORE_ENVIRONMENT=Development -p 7453:8080 felipementel/keycloak-v1
+# docker container run --rm --name keycloak-deploy -u app -e ASPNETCORE_HTTP_PORTS=99 -e ASPNETCORE_ENVIRONMENT=Development -p 7453:99 felipementel/keycloak-v1
 # sudo mkdir -p ./data/postgres-keycloak
 # sudo mkdir -p ./data/pgadmin-keycloak
 # sudo chown -R 999:999 ./data/postgres-keycloak
 # sudo chmod -R 700 ./data/postgres-keycloak
 # sudo chown -R 5050:5050 ./data/pgadmin-keycloak
+
 # Para verificar o health e metrics do keycloak, acesse:
 # http://localhost:9000/health/ready
 # http://localhost:9000/metrics/application
+
 # Para acessar o pgAdmin, acesse:
 # http://localhost:8090
+# User: deploy@pgadmin.com
+# Password: ${PGADMIN_DEFAULT_PASSWORD}
 # Para acessar o banco de dados, utilize:
 # Host: docker inspect postgres-container | grep Gateway
 # Port: 5432
@@ -22,8 +27,9 @@
 # User: admin
 # Password: ${KEYCLOAK_ADMIN_PASSWORD}
 
-# docker compose -f docker/local-environment.yml up -d
+# docker compose -f docker/local-environment.yml up --build -d
 # docker compose -f docker/local-environment.yml down --remove-orphans
+# docker stats --no-stream
 
 services:
   app-service:
@@ -31,15 +37,72 @@ services:
       context: ../src/
       dockerfile: ../src/PoC.KeyCloak.API/Dockerfile
     image: felipementel/keycloak-v1
-    container_name: keycloak-deploy
+    container_name: app-container
     restart: unless-stopped
     user: app
     ports:
-      - 7453:8080
+      - 7457:99
     environment:
       ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_HTTP_PORTS: 99
     depends_on:
-      - keycloak-service
+      postgres-service:
+        condition: service_healthy
+      keycloak-service:
+        condition: service_healthy
+      pgadmin-service:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+    cpuset: '1'
+
+  pgadmin-service:
+    container_name: pgadmin-container
+    image: dpage/pgadmin4:8.14.0
+    depends_on:
+      postgres-service:
+        condition: service_healthy
+    environment:
+      PGADMIN_DEFAULT_EMAIL: deploy@pgadmin.com
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+      PGADMIN_LISTEN_PORT: 80
+      # 0 - CRITICAL
+      # 1 - ERROR
+      # 2 - WARNING
+      # 3 - INFO
+      # 4 - DEBUG
+      # 5 - TRACE
+      # 10 - NOTSET
+      PGADMIN_CONFIG_CONSOLE_LOG_LEVEL: 2
+    volumes:
+      - ./data/pgadmin-keycloak:/var/lib/pgadmin4/storage
+    ports:
+      - 15432:15432
+      - 8090:80
+    healthcheck:
+      # test: ['CMD', 'curl', '-f', 'http://127.0.0.1:80/misc/ping']
+      test: ['CMD', 'wget', '-O', '-', 'http://localhost:80/misc/ping']
+      interval: 30s
+      timeout: 3s
+      retries: 10
+      start_period: 1m
+    labels:
+      - maintainer="Felipe Augusto, Canal DEPLOY"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+    cpuset: '1'
 
   postgres-service:
     container_name: postgres-container
@@ -54,48 +117,46 @@ services:
       POSTGRES_ADMIN_USER: admin
       POSTGRES_ADMIN_PASSWORD: ${POSTGRES_ADMIN_PASSWORD}
       PGDATA: var/lib/postgresql/data/data_keycloak
+      # 0 - EMERGENCY
+      # 1 - ALERT
+      # 2 - CRITICAL
+      # 3 - ERROR
+      # 4 - WARNING
+      # 5 - NOTICE
+      # 6 - INFO
+      # 7 - DEBUG
+      POSTGRES_LOG_LEVEL: 4
     volumes:
       - ./data/postgres-keycloak:/var/lib/postgresql/pgdata
       # - ./init-admin-user.sql:/docker-entrypoint-initdb.d/init-admin-user.sql
     healthcheck:
       test: ['CMD', 'pg_isready', '-U', 'userKeyCloak', '-d', 'keycloakDB']
-      interval: 5s
+      interval: 50s
       timeout: 2s
       retries: 15
+      start_period: 2m
     ports:
-      - 5432:5432
+      - 5437:5432
     networks:
       - local_network
     labels:
       - maintainer="Felipe Augusto, Canal DEPLOY"
-
-  pgadmin-service:
-    container_name: pgadmin-container
-    image: dpage/pgadmin4:8.14.0
-    depends_on:
-      - postgres-service
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@pgadmin.com
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
-      PGADMIN_LISTEN_PORT: 80
-      PGADMIN_CONFIG_CONSOLE_LOG_LEVEL: 10
-    volumes:
-      - ./data/pgadmin-keycloak:/var/lib/pgadmin4/storage
-    ports:
-      - 15432:15432
-      - 8090:80
-    labels:
-      - maintainer="Felipe Augusto, Canal DEPLOY"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+    cpuset: '1'
 
   keycloak-service:
     container_name: keycloak-container
-    depends_on:
-      postgres-service:
-        condition: service_healthy
     image: quay.io/keycloak/keycloak:26.0.7
     environment:
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
       KC_HOSTNAME: localhost
       KC_HOSTNAME_PORT: 8080
       KC_HOSTNAME_STRICT_BACKCHANNEL: 'true'
@@ -105,7 +166,7 @@ services:
       KC_METRICS_ENABLED: 'true'
       KC_HTTP_METRICS_HISTOGRAMS_ENABLED: 'true'
       KC_CACHE_METRICS_HISTOGRAMS_ENABLED: 'true'
-      KC_LOG_LEVEL: info
+      KC_LOG_LEVEL: INFO # DEBUG
       # DB Configuration
       KC_DB: postgres
       KC_DB_VENDOR: postgres
@@ -116,19 +177,32 @@ services:
       KC_DB_URL: jdbc:postgresql://postgres-container:5432/keycloakDB
       KC_DB_USERNAME: userKeyCloak
       KC_DB_PASSWORD: ${POSTGRES_PASSWORD}
+    depends_on:
+      postgres-service:
+        condition: service_healthy
     healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:9000/health/ready']
-      interval: 15s
-      timeout: 2s
-      retries: 15
+      test: ['CMD-SHELL', '[ -f /tmp/HealthCheck.java ] || echo "public class HealthCheck { public static void main(String[] args) throws java.lang.Throwable { System.exit(java.net.HttpURLConnection.HTTP_OK == ((java.net.HttpURLConnection)new java.net.URL(args[0]).openConnection()).getResponseCode() ? 0 : 1); } }" > /tmp/HealthCheck.java && java /tmp/HealthCheck.java http://localhost:9000/health/live']
+      interval: 5s
+      timeout: 5s
+      retries: 30
     command: ['start-dev', '--http-port', '8080']
     ports:
-      - 8080:8080
-      - 9000:9000
+      - 8087:8080
+      - 7447:7443
+      - 9007:9000
     networks:
       - local_network
     labels:
       - maintainer="Felipe Augusto, Canal DEPLOY"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+    cpuset: '1'
 
 networks:
   local_network:

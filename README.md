@@ -44,3 +44,7 @@ curl --location --request POST 'http://localhost:8080/realms/CanalDEPLOY/protoco
 var jsonData = JSON.parse(responseBody);
 postman.setEnvironmentVariable('token', jsonData.access_token);
 ```
+
+# Docs
+
+- [Dotnet Ports](https://learn.microsoft.com/en-us/dotnet/core/compatibility/containers/8.0/aspnet-port)

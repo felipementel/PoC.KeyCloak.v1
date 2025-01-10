@@ -1,14 +1,25 @@
 using Asp.Versioning;
 using Keycloak.AuthServices.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using PoC.KeyCloak.API.Endpoints.v1;
 using Scalar.AspNetCore;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
+using System.Threading;
+using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddRouting(opt =>
 {
@@ -16,19 +27,22 @@ builder.Services.AddRouting(opt =>
     opt.LowercaseQueryStrings = true;
 });
 
-builder.Services.AddApiVersioning(options =>
-{
-    options.DefaultApiVersion = new ApiVersion(1, 0);
-    options.AssumeDefaultVersionWhenUnspecified = true;
-    options.ReportApiVersions = true;
-})
+builder.Services
+    .AddApiVersioning(options =>
+    {
+        options.DefaultApiVersion = new ApiVersion(1, 0);
+        options.AssumeDefaultVersionWhenUnspecified = true;
+        options.ReportApiVersions = true;
+    })
     .AddApiExplorer(options =>
     {
         options.GroupNameFormat = "'v'VVV";
         options.SubstituteApiVersionInUrl = true;
     });
 
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi("v1", options => { options.AddDocumentTransformer<BearerSecuritySchemeTransformer>(); });
+
+
 
 
 
@@ -52,21 +66,35 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-    app.MapScalarApiReference();
 }
 else
 {
     app.UseHttpsRedirection();
 }
 
+app.MapScalarApiReference(options =>
+{
+    options
+    .WithTitle("Canal DEPLOY - PoC.KeyCloak.API")
+    .WithTheme(ScalarTheme.DeepSpace)
+    .WithPreferredScheme("Bearer")
+    .WithHttpBearerAuthentication(bearer =>
+    {
+        bearer.Token = "...";
+    });
+
+    options.WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);
+});
+
 app.MapWeatherForecastEndpoints();
 
-var versionSetPing = app.NewApiVersionSet("Ping")
-                    .Build();
+var versionSetPing = app
+    .NewApiVersionSet("Ping")
+    .Build();
+
 app
     .MapGet("/ping", () =>
     {
@@ -85,3 +113,35 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 await app.RunAsync();
+
+
+internal sealed class BearerSecuritySchemeTransformer(Microsoft.AspNetCore.Authentication.IAuthenticationSchemeProvider authenticationSchemeProvider) : IOpenApiDocumentTransformer
+{
+    public async Task TransformAsync(OpenApiDocument document, OpenApiDocumentTransformerContext context, CancellationToken cancellationToken)
+    {
+        var authenticationSchemes = await authenticationSchemeProvider.GetAllSchemesAsync();
+        if (authenticationSchemes.Any(authScheme => authScheme.Name == "Bearer"))
+        {
+            var requirements = new Dictionary<string, OpenApiSecurityScheme>
+            {
+                ["Bearer"] = new OpenApiSecurityScheme
+                {
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer",
+                    In = ParameterLocation.Header,
+                    BearerFormat = "Json Web Token"
+                }
+            };
+            document.Components ??= new OpenApiComponents();
+            document.Components.SecuritySchemes = requirements;
+
+            foreach (var operation in document.Paths.Values.SelectMany(path => path.Operations))
+            {
+                operation.Value.Security.Add(new OpenApiSecurityRequirement
+                {
+                    [new OpenApiSecurityScheme { Reference = new OpenApiReference { Id = "Bearer", Type = ReferenceType.SecurityScheme } }] = Array.Empty<string>()
+                });
+            }
+        }
+    }
+}

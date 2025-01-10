@@ -1,3 +1,5 @@
+using System;
+
 namespace PoC.KeyCloak.API
 {
     public class WeatherForecast

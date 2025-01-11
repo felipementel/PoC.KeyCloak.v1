@@ -12,18 +12,18 @@
 # http://localhost:9000/metrics/application
 
 # Para acessar o pgAdmin, acesse:
-# http://localhost:8090
+# http://localhost:877
 # User: deploy@pgadmin.com
 # Password: ${PGADMIN_DEFAULT_PASSWORD}
 # Para acessar o banco de dados, utilize:
 # Host: docker inspect postgres-container | grep Gateway
-# Port: 5432
+# Port: 5437
 # Database: keycloakDB
 # User: userKeyCloak
 # Password: ${POSTGRES_PASSWORD}
 
 # Para acessar o Keycloak, acesse:
-# http://localhost:8080
+# http://localhost:8087
 # User: admin
 # Password: ${KEYCLOAK_ADMIN_PASSWORD}
 
@@ -31,42 +31,46 @@
 # docker compose -f docker/local-environment.yml down --remove-orphans
 # docker stats --no-stream
 
+# docker system prune -a -f && docker volume prune && docker network prune && docker container prune
+
 services:
-  app-service:
-    build:
-      context: ../src/
-      dockerfile: ../src/PoC.KeyCloak.API/Dockerfile
-    image: felipementel/keycloak-v1
-    container_name: app-container
-    restart: unless-stopped
-    user: app
-    ports:
-      - 7457:99
-    environment:
-      ASPNETCORE_ENVIRONMENT: Development
-      ASPNETCORE_HTTP_PORTS: 99
-    depends_on:
-      postgres-service:
-        condition: service_healthy
-      keycloak-service:
-        condition: service_healthy
-      pgadmin-service:
-        condition: service_healthy
-    deploy:
-      resources:
-        limits:
-          cpus: '0.50'
-          memory: 256M
-        reservations:
-          cpus: '0.25'
-          memory: 128M
-    cpuset: '1'
+  # app-service:
+  #   build:
+  #     context: ../src/
+  #     dockerfile: ../src/PoC.KeyCloak.API/Dockerfile
+  #   image: felipementel/keycloak-v1
+  #   container_name: app-container
+  #   restart: unless-stopped
+  #   user: app
+  #   ports:
+  #     - 7457:99
+  #   environment:
+  #     ASPNETCORE_ENVIRONMENT: Development
+  #     ASPNETCORE_HTTP_PORTS: 99
+  #   depends_on:
+  #     postgres-service:
+  #       condition: service_healthy
+  #     keycloak-service:
+  #       condition: service_healthy
+  #     pgadmin-service:
+  #       condition: service_healthy
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: '0.50'
+  #         memory: 256M
+  #       reservations:
+  #         cpus: '0.25'
+  #         memory: 128M
+  #   cpuset: '1'
 
   pgadmin-service:
     container_name: pgadmin-container
     image: dpage/pgadmin4:8.14.0
     depends_on:
       postgres-service:
+        condition: service_healthy
+      keycloak-service:
         condition: service_healthy
     environment:
       PGADMIN_DEFAULT_EMAIL: deploy@pgadmin.com
@@ -83,12 +87,11 @@ services:
     volumes:
       - ./data/pgadmin-keycloak:/var/lib/pgadmin4/storage
     ports:
-      - 15432:15432
-      - 8090:80
+      - 15437:15432
+      - 877:80
     healthcheck:
-      # test: ['CMD', 'curl', '-f', 'http://127.0.0.1:80/misc/ping']
       test: ['CMD', 'wget', '-O', '-', 'http://localhost:80/misc/ping']
-      interval: 30s
+      interval: 50s
       timeout: 3s
       retries: 10
       start_period: 1m
@@ -97,11 +100,11 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.50'
-          memory: 256M
+          cpus: '1'
+          memory: 512M
         reservations:
-          cpus: '0.25'
-          memory: 128M
+          cpus: '0.5'
+          memory: 256M
     cpuset: '1'
 
   postgres-service:
@@ -128,7 +131,8 @@ services:
       POSTGRES_LOG_LEVEL: 4
     volumes:
       - ./data/postgres-keycloak:/var/lib/postgresql/pgdata
-      # - ./init-admin-user.sql:/docker-entrypoint-initdb.d/init-admin-user.sql
+      - ./init-admin-user.sql:/docker-entrypoint-initdb.d/init-admin-user.sql
+      - ./init-schema.sql:/docker-entrypoint-initdb.d/init-schema.sql
     healthcheck:
       test: ['CMD', 'pg_isready', '-U', 'userKeyCloak', '-d', 'keycloakDB']
       interval: 50s
@@ -155,6 +159,7 @@ services:
     container_name: keycloak-container
     image: quay.io/keycloak/keycloak:26.0.7
     environment:
+      KC_LOG_CONSOLE_COLOR: 'true'
       KC_BOOTSTRAP_ADMIN_USERNAME: admin
       KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
       KC_HOSTNAME: localhost
@@ -169,14 +174,14 @@ services:
       KC_LOG_LEVEL: INFO # DEBUG
       # DB Configuration
       KC_DB: postgres
-      KC_DB_VENDOR: postgres
-      KC_DB_SCHEMA: public
-      KC_DB_HOST: postgresHost
-      KC_DB_PORT: 5432
+      KC_DB_SCHEMA: canaldeploy
+      KC_DB_URL_HOST: postgresHost
+      KC_DB_URL_PORT: 5432
       KC_DB_NAME: keycloakDB
       KC_DB_URL: jdbc:postgresql://postgres-container:5432/keycloakDB
       KC_DB_USERNAME: userKeyCloak
       KC_DB_PASSWORD: ${POSTGRES_PASSWORD}
+      KC_FRONTEND_URL: http://keycloak.canaldeploy.com
     depends_on:
       postgres-service:
         condition: service_healthy
@@ -197,10 +202,10 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.50'
-          memory: 256M
+          cpus: '0.80'
+          memory: 512M
         reservations:
-          cpus: '0.25'
+          cpus: '0.30'
           memory: 128M
     cpuset: '1'
 

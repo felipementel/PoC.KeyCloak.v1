@@ -48,3 +48,7 @@ postman.setEnvironmentVariable('token', jsonData.access_token);
 # Docs
 
 - [Dotnet Ports](https://learn.microsoft.com/en-us/dotnet/core/compatibility/containers/8.0/aspnet-port)
+
+- https://www.keycloak.org/server/all-config
+
+- https://www.pgadmin.org/docs/pgadmin4/development/container_deployment.html

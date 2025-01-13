@@ -91,7 +91,7 @@ jobs:
         if: ${{ github.event.inputs.sonar-qube }} #&& (steps.cache-sonar-scanner.outputs.cache-hit != 'true')
         run: |
           mkdir -p .sonar/scanner
-          dotnet tool install dotnet-sonarscanner --tool-path .sonar/scanner
+          dotnet tool install --global dotnet-sonarscanner --tool-path .sonar/scanner
 
       - name: Install Coverage
         if: ${{ github.event.inputs.unit-tests }}

@@ -1,5 +1,5 @@
 name: CI
-runs-name: "${{ github.actor }} - ${{ github.run_id }}"
+run-name: "${{ github.actor }} - ${{ github.run_id }}"
 
 on:
   workflow_dispatch:

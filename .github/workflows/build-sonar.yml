@@ -94,7 +94,7 @@ jobs:
           dotnet tool update dotnet-sonarscanner --tool-path .sonar/scanner
 
       - name: Install SonarCloud scanner
-        if: ${{ github.event.inputs.sonar-qube }}
+        if: ${{ github.event.inputs.sonar-qube == true }}
         run: |
           dotnet tool install --global dotnet-sonarscanner
 

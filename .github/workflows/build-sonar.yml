@@ -3,7 +3,7 @@ run-name: "${{ github.actor }} - ${{ github.run_id }}"
 
 on:
   workflow_dispatch:
-    input:
+    inputs:
       environment:
         type: environment
         description: 'Environment to run the workflow'

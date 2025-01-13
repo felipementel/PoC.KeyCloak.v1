@@ -114,13 +114,13 @@ jobs:
   #         dotnet-coverage collect 'dotnet test ./src/' -f xml  -o 'coverage.xml'
   #         dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
 
-  #   - name: Write to workflow job summary
-  #     run: |
-  #       SUMMARY=$'
-  #       # Titulo do summary\n
-  #       ## sub titulo\n
-  #       Mensagem: ${{ github.event.inputs.msg-canal-deploy }}\n'
-  #       echo "$SUMMARY" >> $GITHUB_STEP_SUMMARY
+    - name: Write to workflow job summary
+      run: |
+        SUMMARY=$'
+        # Titulo do summary\n
+        ## sub titulo\n
+        Mensagem: ${{ github.event.inputs.msg-canal-deploy }}\n'
+        echo "$SUMMARY" >> $GITHUB_STEP_SUMMARY
 
   # publish:
   #   needs: build

@@ -24,6 +24,11 @@ on:
         description: 'Run Unit Tests'
         required: false
         default: true
+      snyc:
+        type: boolean
+        description: 'Snyc DAST SAST'
+        required: false
+        default: true
       msg-canal-deploy:
         type: string
         description: 'Message to be displayed in the summary'
@@ -111,6 +116,21 @@ jobs:
           dotnet build ${{ env.csprojFolder }} --no-incremental
           dotnet-coverage collect 'dotnet test ./src/' -f xml  -o 'coverage.xml'
           dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+
+      - name: Run Snyk to check for vulnerabilities
+        if: ${{ github.event.inputs.snyc }}
+        uses: snyk/actions/dotnet@master
+        continue-on-error: true # To make sure that SARIF upload gets called
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --sarif-file-output=snyk.sarif
+
+      - name: Upload result to GitHub Code Scanning
+        if: ${{ github.event.inputs.snyc }}
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: snyk.sarif
 
       - name: Write to workflow job summary
         run: |

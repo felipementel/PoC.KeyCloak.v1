@@ -137,7 +137,7 @@ jobs:
       - name: Write to workflow job summary
         run: |
           SUMMARY=$GITHUB_STEP_SUMMARY$'
-          # Versão\n
+          # Versão gerada\n
           | versao | data | 
           |--|--|
           | ${{ steps.build.outputs.tag-version }} | ${{ steps.date.outputs.date }} |  \n
@@ -154,7 +154,7 @@ jobs:
       - name: Write to workflow job summary DEPLOY
         run: |
           SUMMARY=$GITHUB_STEP_SUMMARY$'
-          # Versão\n
+          # Versão publicada\n
           | versao | data | 
           |--|--|
           | ${{ needs.build.outputs.tag-version }} | ${{ steps.date.outputs.date }} |  \n

@@ -2,6 +2,14 @@ name: CI
 run-name: "${{ github.actor }} - ${{ github.run_id }}"
 
 on:
+  pull_request:
+    branchs:
+      - main
+    type:
+      closed
+    paths-ignore:
+      - '**.md'
+      - '.github/**'
   workflow_dispatch:
     inputs:
       environment:
@@ -22,11 +30,6 @@ on:
       unit-tests:
         type: boolean
         description: 'Run Unit Tests'
-        required: false
-        default: true
-      snyc:
-        type: boolean
-        description: 'Snyc DAST SAST'
         required: false
         default: true
       msg-canal-deploy:
@@ -104,6 +107,13 @@ jobs:
         run: |
           dotnet tool install --global dotnet-coverage
           dotnet tool install --global dotnet-reportgenerator-globaltool
+
+      - name: Get-Version from csproj
+        id: get-version
+        shell: bash
+        run: |
+          version=$(sed -n 's/.*<Version>\(.*\)<\/Version>.*/\1/p' $csprojFolder)
+          echo "tag=$version" >> "$GITHUB_OUTPUT"
         
       - name: Build and analyze
         if: ${{ github.event.inputs.unit-tests && github.event.inputs.sonar-qube }}
@@ -125,15 +135,17 @@ jobs:
           Mensagem: ${{ github.event.inputs.msg-canal-deploy }}\n'
           echo "$SUMMARY" >> $GITHUB_STEP_SUMMARY
 
-  # publish:
-  #   needs: build
-  #   runs-on: ubuntu-latest
-  #   steps:
+  publish:
+    needs: build
+    environment: ${{ github.event.inputs.environment }}
+    if: ${{ github.event.pull_request.merged && github.event.pull_request.state == 'closed' }}
+    runs-on: ubuntu-latest
+    steps:
 
-  #     - name: Write to workflow job summary
-  #       run: |
-  #         SUMMARY=$'
-  #         # Publicado\n
-  #         ## sub titulo da publicação\n
-  #         Mensagem: ${{ github.event.inputs.msg-canal-deploy }}\n'
-  #         echo "$SUMMARY" >> $GITHUB_STEP_SUMMARY
+      - name: Write to workflow job summary DEPLOY
+        run: |
+          SUMMARY=$'
+          # Publicado\n
+          ## sub titulo da publicação\n
+          Mensagem: ${{ github.event.inputs.msg-canal-deploy }}\n'
+          echo "$SUMMARY" >> $GITHUB_STEP_SUMMARY

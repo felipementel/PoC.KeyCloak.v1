@@ -1,8 +1,8 @@
 # docker build -t felipementel/keycloak-v1 -f src/PoC.KeyCloak.API/Dockerfile ./src
 # docker container run --rm --name keycloak-deploy -u app -e ASPNETCORE_ENVIRONMENT=Development -p 7453:8080 felipementel/keycloak-v1
 # docker container run --rm --name keycloak-deploy -u app -e ASPNETCORE_HTTP_PORTS=99 -e ASPNETCORE_ENVIRONMENT=Development -p 7453:99 felipementel/keycloak-v1
-# sudo mkdir -p ./docker/data/postgres-keycloak
-# sudo mkdir -p ./docker/data/pgadmin-keycloak
+# sudo mkdir -p /home/felipementel/docker/volumes/postgres-keycloak
+# sudo mkdir -p /home/felipementel/docker/volumes/pgadmin-keycloak
 # sudo chown -R 999:999 ./docker/data/
 # sudo chmod -R 700 ./docker/data/
 # sudo chown -R 5050:5050 ./docker/data/

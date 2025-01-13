@@ -52,7 +52,7 @@ env:
 
 jobs:
   build:
-    environment: ${{ github.event.inputs.environment }} || DEV
+    # environment: ${{ github.event.inputs.environment }} || DEV
     runs-on: ubuntu-latest
     steps:
 

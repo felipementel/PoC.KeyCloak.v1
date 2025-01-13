@@ -60,7 +60,7 @@ jobs:
         id: get-env
         run: |
           echo "::warning::Environment ${{ github.event.inputs.environment }}"
-          echo "NOW=$(date +'%Y-%m-%dT%H:%M:%S')" >> $GITHUB_ENV
+          echo "NOW=$(date +'%Y-%m-%dT%H:%M:%S')" >> $GITHUB_OUTPUT
 
       - name: Checkout
         uses: actions/checkout@v4
@@ -155,7 +155,7 @@ jobs:
 
       - name: Write to workflow job summary DEPLOY
         run: |
-          SUMMARY=$GITHUB_STEP_SUMMARY$'
+          SUMMARY=$'
           # Versão publicada\n
           | versao | data | 
           |--|--|

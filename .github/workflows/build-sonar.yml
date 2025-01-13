@@ -38,9 +38,9 @@ on:
         description: 'Message to be displayed in the summary'
         required: false
         default: 'nada a declarar'
-  outputs:
-    tag-version:
-      value: ${{ steps.get-version.outputs.tag }}
+    outputs:
+      tag-version:
+        value: ${{ steps.get-version.outputs.tag }}
 
  
 env:

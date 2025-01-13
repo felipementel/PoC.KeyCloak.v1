@@ -10,6 +10,7 @@ on:
     paths-ignore:
       - '**.md'
       - '.github/**'
+  # workflow_call:
   workflow_dispatch:
     inputs:
       environment:
@@ -37,6 +38,7 @@ on:
         description: 'Message to be displayed in the summary'
         required: false
         default: 'nada a declarar'
+
  
 env:
   dotnetVersion: 9.x
@@ -49,6 +51,10 @@ jobs:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
     runs-on: ubuntu-latest
+    timeout-minutes: 4
+    outputs:
+      tag-version:
+        value: ${{ steps.get-version.outputs.tag }}
     steps:
 
       - name: Get Environment
@@ -146,8 +152,10 @@ jobs:
       - name: Write to workflow job summary DEPLOY
         run: |
           SUMMARY=$'
-          # Publicado\n
-          ## sub titulo da publicação\n
+          # Versão\n
+          | versao | data | 
+          |--|--|
+          | ${{ needs.build.outputs.tag-version }} | ${{ steps.date.outputs.date }} |  \n
           Mensagem: ${{ github.event.inputs.msg-canal-deploy }}\n'
           echo "$SUMMARY" >> $GITHUB_STEP_SUMMARY
 

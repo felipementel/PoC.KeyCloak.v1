@@ -81,7 +81,7 @@ jobs:
 
       - name: 🔐 SonarCloud packages cache
         uses: actions/cache@v4
-        if: ${{ github.event.inputs.sonar-qube }}
+        if: ${{ inputs.sonar-qube }}
         with:
           path: ~/sonar/cache
           key: ${{ runner.os }}-sonar
@@ -89,22 +89,27 @@ jobs:
 
       - name: 🔐 SonarCloud scanner cache
         id: cache-sonar-scanner
-        if: ${{ github.event.inputs.sonar-qube }}
+        if: ${{ inputs.sonar-qube }}
         uses: actions/cache@v4
         with:
           path: ./.sonar/scanner
           key: ${{ runner.os }}-sonar-scanner
           restore-keys: ${{ runner.os }}-sonar-scanner
     
+<<<<<<< HEAD
       - name: 🔐 SonarCloud scanner installer
         if: ${{ github.event.inputs.sonar-qube }} #&& (steps.cache-sonar-scanner.outputs.cache-hit != 'true')
+=======
+      - name: Install SonarCloud scanner
+        if: ${{ inputs.sonar-qube }} #&& (steps.cache-sonar-scanner.outputs.cache-hit != 'true')
+>>>>>>> refs/remotes/origin/main
         run: |
           mkdir -p .sonar/scanner
           dotnet tool install --global dotnet-sonarscanner
         # --tool-path .sonar/scanner
 
       - name: Install Coverage
-        if: ${{ github.event.inputs.unit-tests }}
+        if: ${{ inputs.unit-tests }}
         run: |
           dotnet tool install --global dotnet-coverage
           dotnet tool install --global dotnet-reportgenerator-globaltool
@@ -117,7 +122,7 @@ jobs:
           echo "tag=$version" >> "$GITHUB_OUTPUT"
         
       - name: Build and analyze
-        if: ${{ github.event.inputs.unit-tests && github.event.inputs.sonar-qube }}
+        if: ${{ inputs.unit-tests && inputs.sonar-qube }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -128,12 +133,43 @@ jobs:
           dotnet-coverage collect 'dotnet test ./src/' -f xml  -o 'coverage.xml'
           dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
 
+<<<<<<< HEAD
+=======
+      - name: Restore dependencies
+        run: dotnet restore ./src/PoC.KeyCloak.sln
+
+
+      - name: Run Snyk to check for vulnerabilities
+        if: ${{ inputs.snyc }}
+        run: |
+          sudo apt-get install -y nodejs
+          sudo apt-get install -y npm
+          npm install -g snyk
+          snyk auth ${{ secrets.SNYK_TOKEN }}
+          snyk test --sarif-file-output=snyk.sarif --all-projects 
+
+      # - name: Run Snyk to check for vulnerabilities
+      #   if: ${{ inputs.snyc }}
+      #   uses: snyk/actions/dotnet@master
+      #   continue-on-error: true # To make sure that SARIF upload gets called
+      #   env:
+      #     SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      #   with:
+      #     args: --sarif-file-output=snyk.sarif --all-projects
+
+      - name: Upload result to GitHub Code Scanning
+        if: ${{ inputs.snyc }}
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: snyk.sarif
+
+>>>>>>> refs/remotes/origin/main
       - name: Write to workflow job summary
         run: |
           SUMMARY=$GITHUB_STEP_SUMMARY$' 
           # Titulo do summary\n
           ## sub titulo\n
-          Mensagem: ${{ github.event.inputs.msg-canal-deploy }}\n'
+          Mensagem: ${{ inputs.msg-canal-deploy }}\n'
           echo "$SUMMARY" >> $GITHUB_STEP_SUMMARY
 
   publish:
@@ -143,6 +179,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
+<<<<<<< HEAD
       - name: Write to workflow job summary DEPLOY
         run: |
           SUMMARY=$'
@@ -150,3 +187,12 @@ jobs:
           ## sub titulo da publicação\n
           Mensagem: ${{ github.event.inputs.msg-canal-deploy }}\n'
           echo "$SUMMARY" >> $GITHUB_STEP_SUMMARY
+=======
+  #     - name: Write to workflow job summary
+  #       run: |
+  #         SUMMARY=$'
+  #         # Publicado\n
+  #         ## sub titulo da publicação\n
+  #         Mensagem: ${{ inputs.msg-canal-deploy }}\n'
+  #         echo "$SUMMARY" >> $GITHUB_STEP_SUMMARY
+>>>>>>> refs/remotes/origin/main

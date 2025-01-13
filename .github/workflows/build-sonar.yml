@@ -118,7 +118,7 @@ jobs:
 
       - name: Write to workflow job summary
         run: |
-          SUMMARY=$' $GITHUB_STEP_SUMMARY
+          SUMMARY=$GITHUB_STEP_SUMMARY$' 
           # Titulo do summary\n
           ## sub titulo\n
           Mensagem: ${{ github.event.inputs.msg-canal-deploy }}\n'

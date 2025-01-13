@@ -40,7 +40,7 @@ on:
         default: 'nada a declarar'
     outputs:
       tag-version:
-        value: ${{ steps.get-version.outputs.tag }}
+        value: ${{ step.get-version.outputs.tag }}
 
  
 env:
@@ -147,7 +147,7 @@ jobs:
   publish:
     needs: build
     environment: ${{ github.event.inputs.environment }}
-    if: ${{ github.event.pull_request.merged && github.event.pull_request.state == 'closed' }}
+    # if: ${{ github.event.pull_request.merged && github.event.pull_request.state == 'closed' }}
     runs-on: ubuntu-latest
     steps:
 

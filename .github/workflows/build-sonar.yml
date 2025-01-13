@@ -136,10 +136,12 @@ jobs:
 
       - name: Write to workflow job summary
         run: |
-          SUMMARY=$GITHUB_STEP_SUMMARY$' 
-          # Titulo do summary\n
-          ## sub titulo\n
-          Mensagem: ${{ inputs.msg-canal-deploy }}\n'
+          SUMMARY=$GITHUB_STEP_SUMMARY$'
+          # Versão\n
+          | versao | data | 
+          |--|--|
+          | ${{ steps.build.outputs.tag-version }} | ${{ steps.date.outputs.date }} |  \n
+          Mensagem: ${{ github.event.inputs.msg-canal-deploy }}\n'
           echo "$SUMMARY" >> $GITHUB_STEP_SUMMARY
 
   publish:
@@ -151,7 +153,7 @@ jobs:
 
       - name: Write to workflow job summary DEPLOY
         run: |
-          SUMMARY=$'
+          SUMMARY=$GITHUB_STEP_SUMMARY$'
           # Versão\n
           | versao | data | 
           |--|--|

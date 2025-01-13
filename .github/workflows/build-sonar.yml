@@ -40,7 +40,7 @@ on:
         default: 'nada a declarar'
     outputs:
       tag-version:
-        value: ${{ step.get-version.outputs.tag }}
+        value: ${{ steps.get-version.outputs.tag }}
 
  
 env:

@@ -52,7 +52,7 @@ jobs:
     steps:
 
       - name: Get Environment
-        run: echo "Environment ${{ github.event.inputs.environment }}"
+        run: echo "::warning::Environment ${{ github.event.inputs.environment }}"
 
       - name: Checkout
         uses: actions/checkout@v4
@@ -62,7 +62,8 @@ jobs:
         with:
           dotnet-version: ${{ env.dotnetVersion }}
       
-      - uses: gitleaks/gitleaks-action@v2
+      - name: 🧱 Git Leaks 
+        uses: gitleaks/gitleaks-action@v2
         if: ${{ github.event.inputs.git-leaks }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -71,14 +72,14 @@ jobs:
           GITLEAKS_ENABLE_UPLOAD_ARTIFACT: true
           GITLEAKS_NOTIFY_USER_LIST: '@felipementel'
 
-      - name: Set up JDK 23
+      - name: 🔐 Set up JDK 23 to use with SonarCloud
         if: ${{ github.event.inputs.sonar-qube }}
         uses: actions/setup-java@v4        
         with:
           java-version: 23
           distribution: 'zulu'
 
-      - name: Cache SonarCloud packages
+      - name: 🔐 SonarCloud packages cache
         uses: actions/cache@v4
         if: ${{ github.event.inputs.sonar-qube }}
         with:
@@ -86,7 +87,7 @@ jobs:
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
-      - name: Cache SonarCloud scanner
+      - name: 🔐 SonarCloud scanner cache
         id: cache-sonar-scanner
         if: ${{ github.event.inputs.sonar-qube }}
         uses: actions/cache@v4
@@ -95,7 +96,7 @@ jobs:
           key: ${{ runner.os }}-sonar-scanner
           restore-keys: ${{ runner.os }}-sonar-scanner
     
-      - name: Install SonarCloud scanner
+      - name: 🔐 SonarCloud scanner installer
         if: ${{ github.event.inputs.sonar-qube }} #&& (steps.cache-sonar-scanner.outputs.cache-hit != 'true')
         run: |
           mkdir -p .sonar/scanner

@@ -29,31 +29,14 @@ on:
       description: 'Message to be displayed in the summary'
       required: false
       default: 'nada a declarar'
-  # push:
-  #   branches:
-  #     - main
-  #   paths-ignore:
-  #     - '.gitignore'
-  #     - 'docker/.env'
-  #     - '*.md'
-  #     - 'LICENSE'
-  #     - 'CODEOWNERS'
-  # pull_request:
-  #   branches:
-  #     - main
-  #   types:
-  #     - opened
-  #     - synchronize
-  #     - reopened
-
+ 
 env:
   dotnetVersion: 9.x
   csprojFolder: ./src/PoC.KeyCloak.API/PoC.KeyCloak.API.csproj
 
 jobs:
   build:
-    # environment: ${{ github.event.inputs.environment }} || DEV
-    runs-on: ubuntu-latest
+   runs-on: ubuntu-latest
     steps:
 
       - name: Get Environment

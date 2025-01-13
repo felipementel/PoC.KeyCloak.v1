@@ -56,6 +56,10 @@
 curl --location --request POST 'http://localhost:8087/realms/<REALM_NAME>/protocol/openid-connect/token' --header 'Content-Type: application/x-www-form-urlencoded' --data-urlencode 'grant_type=password' --data-urlencode 'client_id=' --data-urlencode 'client_secret=' --data-urlencode 'username=' --data-urlencode 'password='
 ```
 
+```curl
+curl --location --request POST 'http://localhost:8087/realms/Canal-DEPLOY/protocol/openid-connect/token' --header 'Content-Type: application/x-www-form-urlencoded' --data-urlencode 'grant_type=password' --data-urlencode 'client_id=client-api' --data-urlencode 'client_secret=' --data-urlencode 'username=user-api' --data-urlencode 'password='
+```
+
 ```javascript
 var jsonData = JSON.parse(responseBody);
 postman.setEnvironmentVariable('token', jsonData.access_token);

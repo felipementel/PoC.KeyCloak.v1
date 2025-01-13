@@ -34,7 +34,7 @@ namespace PoC.KeyCloak.API.Endpoints.v1
                  .WithOpenApi(operation => new(operation)
                  {
                      OperationId = "adotar-adocoes-post",
-                     Summary = "Adotar um Cachorro",
+                     Summary = "Adotar um  Cachorro",
                      Description = "Operação para um tutor adotar um cachorro",
                      Tags = new List<OpenApiTag> { new() { Name = "Adocoes" } }
                  });

@@ -42,9 +42,7 @@ builder.Services
 
 builder.Services.AddOpenApi("v1", options => { options.AddDocumentTransformer<BearerSecuritySchemeTransformer>(); });
 
-
-
-
+builder.Services.AddAuthorization();
 
 // Add services to the container.
 builder.Services.AddKeycloakWebApiAuthentication(builder.Configuration.GetSection(KeycloakAuthenticationOptions.Section), options =>
@@ -62,8 +60,6 @@ builder.Services.AddKeycloakWebApiAuthentication(builder.Configuration.GetSectio
     };
 });
 
-builder.Services.AddAuthorization();
-
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -79,11 +75,11 @@ app.MapScalarApiReference(options =>
 {
     options
     .WithTitle("Canal DEPLOY - PoC.KeyCloak.API")
-    .WithTheme(ScalarTheme.DeepSpace)
+    .WithTheme(ScalarTheme.Saturn)
     .WithPreferredScheme("Bearer")
     .WithHttpBearerAuthentication(bearer =>
     {
-        bearer.Token = "...";
+        //bearer.Token = "...";
     });
 
     options.WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);

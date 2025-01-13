@@ -1,15 +1,18 @@
 # docker build -t felipementel/keycloak-v1 -f src/PoC.KeyCloak.API/Dockerfile ./src
 # docker container run --rm --name keycloak-deploy -u app -e ASPNETCORE_ENVIRONMENT=Development -p 7453:8080 felipementel/keycloak-v1
 # docker container run --rm --name keycloak-deploy -u app -e ASPNETCORE_HTTP_PORTS=99 -e ASPNETCORE_ENVIRONMENT=Development -p 7453:99 felipementel/keycloak-v1
-# sudo mkdir -p ./data/postgres-keycloak
-# sudo mkdir -p ./data/pgadmin-keycloak
-# sudo chown -R 999:999 ./data/postgres-keycloak
-# sudo chmod -R 700 ./data/postgres-keycloak
-# sudo chown -R 5050:5050 ./data/pgadmin-keycloak
+# sudo mkdir -p ./docker/data/postgres-keycloak
+# sudo mkdir -p ./docker/data/pgadmin-keycloak
+# sudo chown -R 999:999 ./docker/data/
+# sudo chmod -R 700 ./docker/data/
+# sudo chown -R 5050:5050 ./docker/data/
 
 # Para verificar o health e metrics do keycloak, acesse:
 # http://localhost:9000/health/ready
 # http://localhost:9000/metrics/application
+
+# Conectar no container de banco de dados
+# docker exec -it postgres-container bash
 
 # Para acessar o pgAdmin, acesse:
 # http://localhost:877
@@ -85,7 +88,7 @@ services:
       # 10 - NOTSET
       PGADMIN_CONFIG_CONSOLE_LOG_LEVEL: 2
     volumes:
-      - ./data/pgadmin-keycloak:/var/lib/pgadmin4/storage
+      - /data/pgadmin-keycloak:/var/lib/pgadmin4/storage
     ports:
       - 15437:15432
       - 877:80
@@ -119,7 +122,7 @@ services:
       POSTGRES_PORT: 5432
       POSTGRES_ADMIN_USER: admin
       POSTGRES_ADMIN_PASSWORD: ${POSTGRES_ADMIN_PASSWORD}
-      PGDATA: var/lib/postgresql/data/data_keycloak
+      PGDATA: /var/lib/postgresql/data/pgdata
       # 0 - EMERGENCY
       # 1 - ALERT
       # 2 - CRITICAL
@@ -130,9 +133,9 @@ services:
       # 7 - DEBUG
       POSTGRES_LOG_LEVEL: 4
     volumes:
-      - ./data/postgres-keycloak:/var/lib/postgresql/pgdata
       - ./init-admin-user.sql:/docker-entrypoint-initdb.d/init-admin-user.sql
       - ./init-schema.sql:/docker-entrypoint-initdb.d/init-schema.sql
+      - /data/postgres-keycloak:/var/lib/postgresql/data
     healthcheck:
       test: ['CMD', 'pg_isready', '-U', 'userKeyCloak', '-d', 'keycloakDB']
       interval: 50s
@@ -163,8 +166,6 @@ services:
       KC_BOOTSTRAP_ADMIN_USERNAME: admin
       KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
       KC_HOSTNAME: localhost
-      KC_HOSTNAME_PORT: 8080
-      KC_HOSTNAME_STRICT_BACKCHANNEL: 'true'
       KC_HOSTNAME_STRICT_FRONTCHANNEL: 'true'
       KC_HTTP_ENABLED: 'true' #PRD false
       KC_HEALTH_ENABLED: 'true'
@@ -181,7 +182,6 @@ services:
       KC_DB_URL: jdbc:postgresql://postgres-container:5432/keycloakDB
       KC_DB_USERNAME: userKeyCloak
       KC_DB_PASSWORD: ${POSTGRES_PASSWORD}
-      KC_FRONTEND_URL: http://keycloak.canaldeploy.com
     depends_on:
       postgres-service:
         condition: service_healthy
@@ -212,3 +212,7 @@ services:
 networks:
   local_network:
     driver: bridge
+
+volumes:
+  postgres-keycloak:
+  pgadmin-keycloak:

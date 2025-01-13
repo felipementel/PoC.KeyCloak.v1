@@ -117,6 +117,9 @@ jobs:
           dotnet-coverage collect 'dotnet test ./src/' -f xml  -o 'coverage.xml'
           dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
 
+     - name: Restore dependencies
+        run: dotnet restore ./src/PoC.KeyCloak.API.sln
+
       - name: Run Snyk to check for vulnerabilities
         if: ${{ github.event.inputs.snyc }}
         uses: snyk/actions/dotnet@master

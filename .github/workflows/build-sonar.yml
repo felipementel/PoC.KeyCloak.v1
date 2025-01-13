@@ -142,7 +142,7 @@ jobs:
           # Versão gerada\n
           | versao | data | 
           |--|--|
-          | ${{ steps.get-version.outputs.tag }} | ${{ steps.get-version.outputs.now }} |  \n
+          | ${{ steps.get-version.outputs.tag }} | ${{ steps.get-env.outputs.now }} |  \n
           Mensagem: ${{ github.event.inputs.msg-canal-deploy }}\n'
           echo "$SUMMARY" >> $GITHUB_STEP_SUMMARY
 

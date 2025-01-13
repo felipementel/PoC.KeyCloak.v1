@@ -88,7 +88,7 @@ services:
       # 10 - NOTSET
       PGADMIN_CONFIG_CONSOLE_LOG_LEVEL: 2
     volumes:
-      - /data/pgadmin-keycloak:/var/lib/pgadmin4/storage
+      - /home/felipementel/docker/volumes/pgadmin-keycloak:/var/lib/pgadmin4/storage
     ports:
       - 15437:15432
       - 877:80
@@ -135,7 +135,7 @@ services:
     volumes:
       - ./init-admin-user.sql:/docker-entrypoint-initdb.d/init-admin-user.sql
       - ./init-schema.sql:/docker-entrypoint-initdb.d/init-schema.sql
-      - /data/postgres-keycloak:/var/lib/postgresql/data
+      - /home/felipementel/docker/volumes/postgres-keycloak:/var/lib/postgresql/data
     healthcheck:
       test: ['CMD', 'pg_isready', '-U', 'userKeyCloak', '-d', 'keycloakDB']
       interval: 50s

@@ -8,7 +8,7 @@ on:
       type: environment
       description: 'Environment to run the workflow'
       required: true
-      default: 'development'
+      default: 'DEV'
     git-leaks:
       type: boolean
       description: 'Run GitLeaks'
@@ -42,8 +42,8 @@ jobs:
       - name: Teste
         run: echo "Teste"
 
-  #     - name: Get Environment
-  #       run: echo "Environment ${{ github.event.inputs.environment }}"
+      - name: Get Environment
+        run: echo "Environment ${{ github.event.inputs.environment }}"
 
   #     - name: Checkout
   #       uses: actions/checkout@v4

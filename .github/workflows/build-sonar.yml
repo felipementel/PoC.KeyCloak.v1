@@ -29,22 +29,22 @@ on:
       description: 'Message to be displayed in the summary'
       required: false
       default: 'nada a declarar'
-  push:
-    branches:
-      - main
-    paths-ignore:
-      - '.gitignore'
-      - 'docker/.env'
-      - '*.md'
-      - 'LICENSE'
-      - 'CODEOWNERS'
-  pull_request:
-    branches:
-      - main
-    types:
-      - opened
-      - synchronize
-      - reopened
+  # push:
+  #   branches:
+  #     - main
+  #   paths-ignore:
+  #     - '.gitignore'
+  #     - 'docker/.env'
+  #     - '*.md'
+  #     - 'LICENSE'
+  #     - 'CODEOWNERS'
+  # pull_request:
+  #   branches:
+  #     - main
+  #   types:
+  #     - opened
+  #     - synchronize
+  #     - reopened
 
 env:
   dotnetVersion: 9.x

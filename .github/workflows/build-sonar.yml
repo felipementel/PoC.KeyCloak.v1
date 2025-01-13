@@ -3,32 +3,32 @@ runs-name: "${{ github.actor }} - ${{ github.run_id }}"
 
 on:
   workflow_dispatch:
-  input:
-    environment:
-      type: environment
-      description: 'Environment to run the workflow'
-      required: true
-      default: 'DEV'
-    git-leaks:
-      type: boolean
-      description: 'Run GitLeaks'
-      required: false
-      default: true
-    sonar-qube:
-      type: boolean
-      description: 'Run SonarQube'
-      required: false
-      default: true
-    unit-tests:
-      type: boolean
-      description: 'Run Unit Tests'
-      required: false
-      default: true
-    msg-canal-deploy:
-      type: string
-      description: 'Message to be displayed in the summary'
-      required: false
-      default: 'nada a declarar'
+    input:
+      environment:
+        type: environment
+        description: 'Environment to run the workflow'
+        required: true
+        default: 'DEV'
+      git-leaks:
+        type: boolean
+        description: 'Run GitLeaks'
+        required: false
+        default: true
+      sonar-qube:
+        type: boolean
+        description: 'Run SonarQube'
+        required: false
+        default: true
+      unit-tests:
+        type: boolean
+        description: 'Run Unit Tests'
+        required: false
+        default: true
+      msg-canal-deploy:
+        type: string
+        description: 'Message to be displayed in the summary'
+        required: false
+        default: 'nada a declarar'
  
 env:
   dotnetVersion: 9.x

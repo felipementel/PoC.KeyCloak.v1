@@ -51,12 +51,16 @@ jobs:
       cancel-in-progress: true
     outputs:
       tag-version: ${{ steps.get-version.outputs.tag }}
+      now: ${{ steps.get-env.outputs.NOW }}
     runs-on: ubuntu-latest
     timeout-minutes: 4
     steps:
 
       - name: Get Environment
-        run: echo "::warning::Environment ${{ github.event.inputs.environment }}"
+        id: get-env
+        run: |
+          echo "::warning::Environment ${{ github.event.inputs.environment }}"
+          echo "NOW=$(date +'%Y-%m-%dT%H:%M:%S')" >> $GITHUB_ENV
 
       - name: Checkout
         uses: actions/checkout@v4
@@ -138,7 +142,7 @@ jobs:
           # Versão gerada\n
           | versao | data | 
           |--|--|
-          | ${{ steps.get-version.outputs.tag }} | $(date +'%d/%m/%Y %H:%M:%S') |  \n
+          | ${{ steps.get-version.outputs.tag }} | ${{ steps.get-version.outputs.now }} |  \n
           Mensagem: ${{ github.event.inputs.msg-canal-deploy }}\n'
           echo "$SUMMARY" >> $GITHUB_STEP_SUMMARY
 
@@ -155,7 +159,7 @@ jobs:
           # Versão publicada\n
           | versao | data | 
           |--|--|
-          | ${{ needs.build.outputs.tag-version }} | $(date +'%d/%m/%Y %H:%M:%S') |  \n
+          | ${{ needs.build.outputs.tag-version }} | ${{ needs.build.outputs.now }} |  \n
           Mensagem: ${{ github.event.inputs.msg-canal-deploy }}\n'
           echo "$SUMMARY" >> $GITHUB_STEP_SUMMARY
 

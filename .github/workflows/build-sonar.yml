@@ -42,8 +42,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-  #     - name: Get Environment
-  #       run: echo "Environment ${{ github.event.inputs.environment }}"
+      - name: Get Environment
+        run: echo "Environment ${{ github.event.inputs.environment }}"
 
   #     - name: Checkout
   #       uses: actions/checkout@v4

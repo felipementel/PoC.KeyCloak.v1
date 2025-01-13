@@ -64,7 +64,7 @@ jobs:
           GITLEAKS_NOTIFY_USER_LIST: '@felipementel'
 
       - name: Set up JDK 23
-        if: ${{ github.event.inputs.sonar-qube == true }}
+        if: ${{ github.event.inputs.sonar-qube }}
         uses: actions/setup-java@v4        
         with:
           java-version: 23
@@ -72,7 +72,7 @@ jobs:
 
       - name: Cache SonarCloud packages
         uses: actions/cache@v4
-        if: ${{ github.event.inputs.sonar-qube == true }}
+        if: ${{ github.event.inputs.sonar-qube }}
         with:
           path: ~/sonar/cache
           key: ${{ runner.os }}-sonar
@@ -80,7 +80,7 @@ jobs:
 
       - name: Cache SonarCloud scanner
         id: cache-sonar-scanner
-        if: ${{ github.event.inputs.sonar-qube == true }}
+        if: ${{ github.event.inputs.sonar-qube }}
         uses: actions/cache@v4
         with:
           path: ./.sonar/scanner
@@ -88,7 +88,7 @@ jobs:
           restore-keys: ${{ runner.os }}-sonar-scanner
     
       - name: Install SonarCloud scanner
-        if: ${{ github.event.inputs.sonar-qube == true }} && ${{ steps.cache-sonar-scanner.outputs.cache-hit != 'true' }}
+        if: ${{ github.event.inputs.sonar-qube }} || ${{ steps.cache-sonar-scanner.outputs.cache-hit != 'true' }}
         run: |
           mkdir -p .sonar/scanner
           dotnet tool update dotnet-sonarscanner --tool-path .sonar/scanner

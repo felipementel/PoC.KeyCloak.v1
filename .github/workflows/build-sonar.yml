@@ -118,7 +118,7 @@ jobs:
           dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
 
       - name: Restore dependencies
-        run: dotnet restore ./src/PoC.KeyCloak.API.sln
+        run: dotnet restore ./src/PoC.KeyCloak.sln
 
       - name: Run Snyk to check for vulnerabilities
         if: ${{ github.event.inputs.snyc }}

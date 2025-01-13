@@ -54,7 +54,7 @@ jobs:
           dotnet-version: ${{ env.dotnetVersion }}
       
       - uses: gitleaks/gitleaks-action@v2
-        if: ${{ github.event.inputs.git-leaks }}
+        if: ${{ github.event.inputs.git-leaks == true }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}

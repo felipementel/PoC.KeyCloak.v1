@@ -1,5 +1,5 @@
 name: CI
-runs-name: ${{ github.actor }} - ${{ github.run_id }}
+runs-name: "${{ github.actor }} - ${{ github.run_id }}"
 
 on:
   workflow_dispatch:
@@ -57,7 +57,7 @@ jobs:
     steps:
 
       - name: Get Environment
-        run: echo "Environment: ${{ github.event.inputs.environment }}"
+        run: echo "Environment ${{ github.event.inputs.environment }}"
 
       - name: Checkout
         uses: actions/checkout@v4

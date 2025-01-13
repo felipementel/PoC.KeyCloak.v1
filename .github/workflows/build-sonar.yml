@@ -138,7 +138,7 @@ jobs:
           # Versão gerada\n
           | versao | data | 
           |--|--|
-          | ${{ steps.get-version.outputs.tag }} | ${{ steps.date.outputs.date }} |  \n
+          | ${{ steps.get-version.outputs.tag }} | $(date +'%Y-%m-%d') |  \n
           Mensagem: ${{ github.event.inputs.msg-canal-deploy }}\n'
           echo "$SUMMARY" >> $GITHUB_STEP_SUMMARY
 
@@ -155,7 +155,7 @@ jobs:
           # Versão publicada\n
           | versao | data | 
           |--|--|
-          | ${{ needs.build.outputs.tag-version }} | ${{ steps.date.outputs.date }} |  \n
+          | ${{ needs.build.outputs.tag-version }} | $(date +'%Y-%m-%d') |  \n
           Mensagem: ${{ github.event.inputs.msg-canal-deploy }}\n'
           echo "$SUMMARY" >> $GITHUB_STEP_SUMMARY
 

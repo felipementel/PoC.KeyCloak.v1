@@ -50,7 +50,7 @@ env:
 
 jobs:
   build:
-    environment: ${{ github.event.inputs.environment }}
+    environment: ${{ inputs.environment }}
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
@@ -65,7 +65,7 @@ jobs:
       - name: Get Environment
         id: get-env
         run: |
-          echo "::warning::Environment ${{ github.event.inputs.environment }}"
+          echo "::warning::Environment ${{ inputs.environment }}"
           echo "NOW=$(date +'%Y-%m-%dT%H:%M:%S')" >> $GITHUB_OUTPUT
 
       - name: Checkout
@@ -78,7 +78,7 @@ jobs:
       
       - name: 🧱 Git Leaks 
         uses: gitleaks/gitleaks-action@v2
-        if: ${{ github.event.inputs.git-leaks }}
+        if: ${{ inputs.git-leaks }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
@@ -87,7 +87,7 @@ jobs:
           GITLEAKS_NOTIFY_USER_LIST: '@felipementel'
 
       - name: 🔐 Set up JDK 23 to use with SonarCloud
-        if: ${{ github.event.inputs.sonar-qube }}
+        if: ${{ inputs.sonar-qube }}
         uses: actions/setup-java@v4        
         with:
           java-version: 23
@@ -111,7 +111,7 @@ jobs:
           restore-keys: ${{ runner.os }}-sonar-scanner
     
       - name: 🔐 SonarCloud scanner installer
-        if: ${{ github.event.inputs.sonar-qube }} #&& (steps.cache-sonar-scanner.outputs.cache-hit != 'true')
+        if: ${{ inputs.sonar-qube }} #&& (steps.cache-sonar-scanner.outputs.cache-hit != 'true')
         run: |
           mkdir -p .sonar/scanner
           dotnet tool install --global dotnet-sonarscanner
@@ -170,12 +170,12 @@ jobs:
           | versao | data | 
           |--|--|
           | ${{ steps.get-version.outputs.tag }} | ${{ steps.get-env.outputs.now }} |  \n
-          Mensagem: ${{ github.event.inputs.msg-canal-deploy }}\n'
+          Mensagem: ${{ inputs.msg-canal-deploy }}\n'
           echo "$SUMMARY" >> $GITHUB_STEP_SUMMARY
 
   publish:
     needs: build
-    environment: ${{ github.event.inputs.environment }}
+    environment: ${{ inputs.environment }}
     # if: ${{ github.event.pull_request.merged && github.event.pull_request.state == 'closed' }}
     runs-on: ubuntu-latest
     steps:
@@ -187,6 +187,6 @@ jobs:
           | versao | data | 
           |--|--|
           | ${{ needs.build.outputs.tag-version }} | ${{ needs.build.outputs.now }} |  \n
-          Mensagem: ${{ github.event.inputs.msg-canal-deploy }}\n'
+          Mensagem: ${{ inputs.msg-canal-deploy }}\n'
           echo "$SUMMARY" >> $GITHUB_STEP_SUMMARY
 

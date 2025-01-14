@@ -59,8 +59,7 @@ jobs:
       now: ${{ steps.get-env.outputs.NOW }}
     runs-on: ubuntu-latest
     timeout-minutes: 4
-    permissions:
-      contents: write-all
+    permissions: write-all
     steps:
 
       - name: Get Environment

@@ -10,6 +10,7 @@ using Microsoft.OpenApi.Models;
 using Scalar.AspNetCore;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -107,6 +108,7 @@ app.UseAuthorization();
 
 await app.RunAsync();
 
+[ExcludeFromCodeCoverage]
 public partial class Program { }
 
 internal sealed class BearerSecuritySchemeTransformer(Microsoft.AspNetCore.Authentication.IAuthenticationSchemeProvider authenticationSchemeProvider) : IOpenApiDocumentTransformer

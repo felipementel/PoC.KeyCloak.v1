@@ -82,7 +82,13 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.dotnetVersion }}
-      
+
+      - name: 🎃 Install Coverage
+        if: ${{ inputs.unit-tests }}
+        run: |
+          dotnet tool install --global dotnet-coverage
+          dotnet tool install --global dotnet-reportgenerator-globaltool
+          
       - name: 🧱 Git Leaks 
         uses: gitleaks/gitleaks-action@v2
         if: ${{ inputs.git-leaks }}
@@ -123,12 +129,6 @@ jobs:
           mkdir -p .sonar/scanner
           dotnet tool install --global dotnet-sonarscanner
         # --tool-path .sonar/scanner
-
-      - name: 🎃 Install Coverage
-        if: ${{ inputs.unit-tests }}
-        run: |
-          dotnet tool install --global dotnet-coverage
-          dotnet tool install --global dotnet-reportgenerator-globaltool
         
       - name: 🔐 Build and analyze  (Test ✅, Sonar ✅)
         if: ${{ inputs.unit-tests && inputs.sonar-qube }}

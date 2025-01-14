@@ -158,13 +158,13 @@ jobs:
         run: |
           dotnet-coverage collect 'dotnet test ./src/' -f xml  -o 'coverage.xml'
 
-      - name: 🪐 -  Restore dependencies
+      - name: 🍵 Restore dependencies
         run: dotnet restore ./src/PoC.KeyCloak.sln
 
-      - name: 🪐 - Snyc Setup
+      - name: 🍵 Snyc Setup
         uses: snyk/actions/setup@master
 
-      - name: 🪐 - Run Snyk to check for vulnerabilities
+      - name: 🍵 Run Snyk to check for vulnerabilities
         uses: snyk/actions/dotnet@master
         continue-on-error: true # To make sure that SARIF upload gets called
         env:
@@ -172,7 +172,7 @@ jobs:
         with:
           args: --sarif-file-output=snyk.sarif --file=./src/PoC.KeyCloak.sln
         
-      - name: 🪐 - Upload result to GitHub Code Scanning
+      - name: 🍵 Upload result to GitHub Code Scanning
         if: ${{ inputs.git-leaks }}
         uses: github/codeql-action/upload-sarif@v3
         with:

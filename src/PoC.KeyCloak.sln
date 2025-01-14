@@ -5,6 +5,8 @@ VisualStudioVersion = 17.10.35027.167
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoC.KeyCloak.API", "PoC.KeyCloak.API\PoC.KeyCloak.API.csproj", "{32F2B9A9-E46C-4E82-BD8F-1D2FF8D8D918}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PoC.KeyCloak.API.Tests", "PoC.KeyCloak.API.Tests\PoC.KeyCloak.API.Tests.csproj", "{60762A81-9084-44FF-8692-6EDD5782460B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{32F2B9A9-E46C-4E82-BD8F-1D2FF8D8D918}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{32F2B9A9-E46C-4E82-BD8F-1D2FF8D8D918}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{32F2B9A9-E46C-4E82-BD8F-1D2FF8D8D918}.Release|Any CPU.Build.0 = Release|Any CPU
+		{60762A81-9084-44FF-8692-6EDD5782460B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{60762A81-9084-44FF-8692-6EDD5782460B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{60762A81-9084-44FF-8692-6EDD5782460B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{60762A81-9084-44FF-8692-6EDD5782460B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

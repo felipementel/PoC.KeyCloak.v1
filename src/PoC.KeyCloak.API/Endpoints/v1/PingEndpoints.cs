@@ -10,12 +10,12 @@ using System.Threading.Tasks;
 
 namespace PoC.KeyCloak.API.Endpoints.v1
 {
-    public static class WeatherForecastEndpoints
+    public static class PingEndpoints
     {
-        public static void MapWeatherForecastEndpoints(this IEndpointRouteBuilder app)
+        public static void MapPingEndpoints(this IEndpointRouteBuilder app)
         {
             var apiVersionSetWeatherForcast = app
-               .NewApiVersionSet("WeatherForecast")
+               .NewApiVersionSet("ping")
                .HasApiVersion(new ApiVersion(1))
                .ReportApiVersions()
                .Build();

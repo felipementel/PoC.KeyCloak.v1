@@ -1,6 +1,5 @@
 using Asp.Versioning;
 using Keycloak.AuthServices.Authentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.OpenApi;
@@ -8,14 +7,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using PoC.KeyCloak.API.Endpoints.v1;
 using Scalar.AspNetCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using System.Threading;
-using System;
+using System.Threading.Tasks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -85,31 +83,31 @@ app.MapScalarApiReference(options =>
     options.WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);
 });
 
-app.MapWeatherForecastEndpoints();
+//app.MapPingEndpoints();
 
 var versionSetPing = app
     .NewApiVersionSet("Ping")
     .Build();
 
 app
-    .MapGet("/ping", () =>
+    .MapGet("/ping-pong-test", () =>
     {
-        return TypedResults.Ok(Assembly.GetExecutingAssembly().GetName().Version.ToString());
+        return TypedResults.Ok(new { version = Assembly.GetExecutingAssembly().GetName().Version!.ToString() });
     }).WithOpenApi(operation => new(operation)
     {
-        OperationId = "get-ping-get"
+        OperationId = "get-ping-pong-test",
+        
     })
 .WithApiVersionSet(versionSetPing)
-.RequireAuthorization()
+//.RequireAuthorization()
 .Produces<string>(200);
-
-
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 await app.RunAsync();
 
+public partial class Program { }
 
 internal sealed class BearerSecuritySchemeTransformer(Microsoft.AspNetCore.Authentication.IAuthenticationSchemeProvider authenticationSchemeProvider) : IOpenApiDocumentTransformer
 {
@@ -123,7 +121,7 @@ internal sealed class BearerSecuritySchemeTransformer(Microsoft.AspNetCore.Authe
                 ["Bearer"] = new OpenApiSecurityScheme
                 {
                     Type = SecuritySchemeType.Http,
-                    Scheme = "bearer",
+                    Scheme = "Bearer",
                     In = ParameterLocation.Header,
                     BearerFormat = "Json Web Token"
                 }
@@ -135,7 +133,14 @@ internal sealed class BearerSecuritySchemeTransformer(Microsoft.AspNetCore.Authe
             {
                 operation.Value.Security.Add(new OpenApiSecurityRequirement
                 {
-                    [new OpenApiSecurityScheme { Reference = new OpenApiReference { Id = "Bearer", Type = ReferenceType.SecurityScheme } }] = Array.Empty<string>()
+                    [new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Id = "Bearer",
+                            Type = ReferenceType.SecurityScheme
+                        }
+                    }] = Array.Empty<string>()
                 });
             }
         }

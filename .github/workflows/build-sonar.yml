@@ -33,6 +33,11 @@ on:
         description: 'Run Unit Tests'
         required: false
         default: true
+      snyc:
+        type: boolean
+        description: 'Snyc.io'
+        required: false
+        default: true
       msg-canal-deploy:
         type: string
         description: 'Message to be displayed in the summary'

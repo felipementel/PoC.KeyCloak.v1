@@ -143,7 +143,7 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          args: --sarif-file-output=snyk-snyc.sarif --file=./src/PoC.KeyCloak.sln
+          args: --sarif-file-output=snyk.sarif --file=./src/PoC.KeyCloak.sln
         
       - name: Upload result to GitHub Code Scanning
         if: ${{ inputs.git-leaks }}

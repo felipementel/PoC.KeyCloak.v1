@@ -123,6 +123,12 @@ jobs:
         run: |
           version=$(sed -n 's/.*<Version>\(.*\)<\/Version>.*/\1/p' $csprojFolder)
           echo "tag=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Upload result to GitHub Code Scanning
+        if: ${{ inputs.git-leaks }}
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: snyk.sarif
         
       - name: Build and analyze
         if: ${{ inputs.unit-tests && inputs.sonar-qube }}

@@ -60,7 +60,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 4
     permissions:
-      contents: write
+      contents: write-all
     steps:
 
       - name: Get Environment
@@ -84,7 +84,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
           GITLEAKS_ENABLE_SUMMARY: true
-          GITLEAKS_ENABLE_UPLOAD_ARTIFACT: true
+          GITLEAKS_ENABLE_UPLOAD_ARTIFACT: false
           GITLEAKS_NOTIFY_USER_LIST: '@felipementel'
 
       - name: 🔐 Set up JDK 23 to use with SonarCloud
@@ -145,20 +145,6 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           args: --sarif-file-output=snyk-snyc.sarif --file=./src/PoC.KeyCloak.sln
-          
-      - name: Upload result to GitHub Code Scanning
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: snyk-snyc.sarif
-
-      # - name: Run Snyk to check for vulnerabilities
-      #   if: ${{ github.event.inputs.snyc }}
-      #   uses: snyk/actions/dotnet@master
-      #   continue-on-error: true # To make sure that SARIF upload gets called
-      #   env:
-      #     SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-      #   with:
-      #     args: --sarif-file-output=snyk.sarif --all-projects
         
       - name: Upload result to GitHub Code Scanning
         if: ${{ inputs.git-leaks }}

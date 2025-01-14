@@ -161,7 +161,8 @@ jobs:
       - name: 🪐 -  Restore dependencies
         run: dotnet restore ./src/PoC.KeyCloak.sln
 
-      - uses: 🪐 - snyk/actions/setup@master
+      - name: 🪐 - Snyc Setup
+      - uses: snyk/actions/setup@master
 
       - name: 🪐 - Run Snyk to check for vulnerabilities
         uses: snyk/actions/dotnet@master

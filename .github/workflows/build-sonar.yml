@@ -3,9 +3,9 @@ run-name: "${{ github.actor }} - ${{ github.run_id }}"
 
 on:
   pull_request:
-    branchs:
+    branches:
       - main
-    type:
+    types:
       closed
     paths-ignore:
       - '**.md'
@@ -124,6 +124,35 @@ jobs:
           version=$(sed -n 's/.*<Version>\(.*\)<\/Version>.*/\1/p' $csprojFolder)
           echo "tag=$version" >> "$GITHUB_OUTPUT"
 
+      - name: Restore dependencies
+        run: dotnet restore ./src/PoC.KeyCloak.sln
+
+      - uses: snyk/actions/setup@master
+      
+      - uses: actions/setup-go@v1
+
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/dotnet@master
+        continue-on-error: true # To make sure that SARIF upload gets called
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --sarif-file-output=snyk-snyc.sarif
+          
+      - name: Upload result to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: snyk-snyc.sarif
+
+      # - name: Run Snyk to check for vulnerabilities
+      #   if: ${{ github.event.inputs.snyc }}
+      #   uses: snyk/actions/dotnet@master
+      #   continue-on-error: true # To make sure that SARIF upload gets called
+      #   env:
+      #     SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      #   with:
+      #     args: --sarif-file-output=snyk.sarif --all-projects
+        
       - name: Upload result to GitHub Code Scanning
         if: ${{ inputs.git-leaks }}
         uses: github/codeql-action/upload-sarif@v3

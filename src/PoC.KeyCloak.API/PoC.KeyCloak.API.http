@@ -1,6 +1,6 @@
-@PoC.KeyCloak.API_HostAddress = http://localhost:7550
+@localhost = http://localhost:7551
 
-GET {{PoC.KeyCloak.API_HostAddress}}/weatherforecast/
+GET {{localhost}}/ping/
 Accept: application/json
 
 ###

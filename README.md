@@ -34,7 +34,9 @@
       1 - Preencher o campo *Name* e Deixar o ***Include in token scope*** marcado
     SAVE
   - Mappers - Configure a new mapper
-      1 - Selecionar o "Audience" e depois coloque um nome
+      1 - Selecionar o "Audience"
+      2 - Preencha o "name"
+      2 - Include Client Audience = << client name >>
 
 -  Menu: Clients
   - Selecione o usuário recem criado.

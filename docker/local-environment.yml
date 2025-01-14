@@ -37,35 +37,35 @@
 # docker system prune -a -f && docker volume prune && docker network prune && docker container prune
 
 services:
-  # app-service:
-  #   build:
-  #     context: ../src/
-  #     dockerfile: ../src/PoC.KeyCloak.API/Dockerfile
-  #   image: felipementel/keycloak-v1
-  #   container_name: app-container
-  #   restart: unless-stopped
-  #   user: app
-  #   ports:
-  #     - 7457:99
-  #   environment:
-  #     ASPNETCORE_ENVIRONMENT: Development
-  #     ASPNETCORE_HTTP_PORTS: 99
-  #   depends_on:
-  #     postgres-service:
-  #       condition: service_healthy
-  #     keycloak-service:
-  #       condition: service_healthy
-  #     pgadmin-service:
-  #       condition: service_healthy
-  #   deploy:
-  #     resources:
-  #       limits:
-  #         cpus: '0.50'
-  #         memory: 256M
-  #       reservations:
-  #         cpus: '0.25'
-  #         memory: 128M
-  #   cpuset: '1'
+  app-service:
+    build:
+      context: ../src/
+      dockerfile: ../src/PoC.KeyCloak.API/Dockerfile
+    image: felipementel/keycloak-v1
+    container_name: app-container
+    restart: unless-stopped
+    user: app
+    ports:
+      - 7457:99
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_HTTP_PORTS: 99
+    depends_on:
+      postgres-service:
+        condition: service_healthy
+      keycloak-service:
+        condition: service_healthy
+      pgadmin-service:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+    cpuset: '1'
 
   pgadmin-service:
     container_name: pgadmin-container
@@ -160,7 +160,7 @@ services:
 
   keycloak-service:
     container_name: keycloak-container
-    image: quay.io/keycloak/keycloak:26.0.7
+    image: quay.io/keycloak/keycloak:26.0.8
     environment:
       KC_LOG_CONSOLE_COLOR: 'true'
       KC_BOOTSTRAP_ADMIN_USERNAME: admin

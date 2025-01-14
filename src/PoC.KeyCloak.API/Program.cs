@@ -1,5 +1,6 @@
 using Asp.Versioning;
 using Keycloak.AuthServices.Authentication;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.OpenApi;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using PoC.KeyCloak.API.Endpoints.v1;
 using Scalar.AspNetCore;
 using System;
 using System.Collections.Generic;
@@ -39,20 +41,28 @@ builder.Services
         options.SubstituteApiVersionInUrl = true;
     });
 
-builder.Services.AddOpenApi("v1", options => { options.AddDocumentTransformer<BearerSecuritySchemeTransformer>(); });
+builder.Services.AddOpenApi("v1", options =>
+{
+    options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
+});
 
 builder.Services.AddAuthorization();
 
 // Add services to the container.
-builder.Services.AddKeycloakWebApiAuthentication(builder.Configuration.GetSection(KeycloakAuthenticationOptions.Section), options =>
+builder.Services.AddKeycloakWebApiAuthentication(
+    builder.Configuration.GetSection(KeycloakAuthenticationOptions.Section), options =>
 {
     options.RequireHttpsMetadata = false; // Use false apenas em desenvolvimento
-    options.Authority = builder.Configuration["KeyCloak:auth-server-url"] + "realms/" + builder.Configuration["KeyCloak:realm"];
+    options.Authority = builder.Configuration["KeyCloak:auth-server-url"] +
+        "realms/" +
+        builder.Configuration["KeyCloak:realm"];
     options.Audience = builder.Configuration["KeyCloak:resource"];
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
-        ValidIssuer = builder.Configuration["KeyCloak:auth-server-url"] + "realms/" + builder.Configuration["KeyCloak:realm"],
+        ValidIssuer = builder.Configuration["KeyCloak:auth-server-url"] +
+            "realms/" +
+            builder.Configuration["KeyCloak:realm"],
         ValidateAudience = true,
         ValidAudience = builder.Configuration["KeyCloak:resource"],
         ValidateLifetime = true
@@ -84,24 +94,9 @@ app.MapScalarApiReference(options =>
     options.WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);
 });
 
-//app.MapPingEndpoints();
+app.MapPingsEndpoints();
 
-var versionSetPing = app
-    .NewApiVersionSet("Ping")
-    .Build();
-
-app
-    .MapGet("/ping-pong-test", () =>
-    {
-        return TypedResults.Ok(new { version = Assembly.GetExecutingAssembly().GetName().Version!.ToString() });
-    }).WithOpenApi(operation => new(operation)
-    {
-        OperationId = "get-ping-pong-test",
-        
-    })
-.WithApiVersionSet(versionSetPing)
-//.RequireAuthorization()
-.Produces<string>(200);
+app.MapNumbersEndpoints();
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -111,12 +106,18 @@ await app.RunAsync();
 [ExcludeFromCodeCoverage]
 public partial class Program { }
 
-internal sealed class BearerSecuritySchemeTransformer(Microsoft.AspNetCore.Authentication.IAuthenticationSchemeProvider authenticationSchemeProvider) : IOpenApiDocumentTransformer
+[ExcludeFromCodeCoverage]
+internal sealed class BearerSecuritySchemeTransformer(
+    IAuthenticationSchemeProvider authenticationSchemeProvider) : IOpenApiDocumentTransformer
 {
-    public async Task TransformAsync(OpenApiDocument document, OpenApiDocumentTransformerContext context, CancellationToken cancellationToken)
+    public async Task TransformAsync(
+        OpenApiDocument document,
+        OpenApiDocumentTransformerContext context, 
+        CancellationToken cancellationToken)
     {
         var authenticationSchemes = await authenticationSchemeProvider.GetAllSchemesAsync();
-        if (authenticationSchemes.Any(authScheme => authScheme.Name == "Bearer"))
+        if (authenticationSchemes
+            .Any(authScheme => authScheme.Name == "Bearer"))
         {
             var requirements = new Dictionary<string, OpenApiSecurityScheme>
             {

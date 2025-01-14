@@ -83,7 +83,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
           GITLEAKS_ENABLE_SUMMARY: true
-          GITLEAKS_ENABLE_UPLOAD_ARTIFACT: false
+          GITLEAKS_ENABLE_UPLOAD_ARTIFACT: true
           GITLEAKS_NOTIFY_USER_LIST: '@felipementel'
 
       - name: 🔐 Set up JDK 23 to use with SonarCloud

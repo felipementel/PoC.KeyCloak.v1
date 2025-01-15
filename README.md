@@ -10,48 +10,51 @@
 > .NET 9 SDK
 
 > [!WARNING]
-> testado
-
-
 > [![SonarQube Cloud](https://sonarcloud.io/images/project_badges/sonarcloud-light.svg)](https://sonarcloud.io/summary/new_code?id=felipementel_PoC.KeyCloak.v1)
 
 ## Passo a passo
 
-### 1 Criação do Realm
+### 1. Criação do Realm
+1. Crie um novo Realm no Keycloak.
 
-### 2 Menu: Clients
+### 2. Configuração de Clientes
 
-    2.1 - General Settings - Preencher o campo "Client ID"
+#### Menu: **Clients**
+1. Acesse o menu **Clients** e realize as configurações abaixo:
+   - **General Settings**: Preencha o campo **Client ID**.
+   - **Capability Config**: Habilite a flag **Client Authentication**.
+   - **Login Settings**: Não é necessário realizar configurações adicionais (**n/a**).
 
-    2.2 - Capability config = habilitar flag "Client Authentication"
+#### Menu: **Client Scopes**
+1. Crie um novo **Client Scope**:
+   - Preencha o campo **Name**.
+   - Marque a opção **Include in token scope**.
+   - Clique em **Save**.
+2. Configure um novo Mapper:
+   - Selecione o tipo **Audience**.
+   - Preencha o campo **Name**.
+   - No campo **Include Client Audience**, insira o nome do **client** criado no passo 2 (Menu: **Clients**).
 
-    2.3 - Login settings = n/a
+#### Menu: **Clients**
+1. Selecione o cliente recém-criado.
+2. Vá até a aba **Client Scopes**:
+   - Clique no botão **Add client scope**.
+   - Selecione o scope criado anteriormente.
+   - Clique em **Add / Default** para finalizar.
 
-  SAVE
+### 3. Configuração de Usuários
 
-- Menu: Client scopes
-    Create client scope
-      1 - Preencher o campo *Name* e Deixar o ***Include in token scope*** marcado
-    SAVE
-  - Mappers - Configure a new mapper
-      1 - Selecionar o "Audience"
-      2 - Preencha o "name"
-      2 - Include Client Audience = << client name >>
-
--  Menu: Clients
-  - Selecione o usuário recem criado.
-  Clicar na aba "Client scopes" e depois no botão "Add client scope", selecionar o scope criado, e depois clique em Add / Default
-
-- Menu User
-
-  - Create new user
-    1 - Preencher o campo "Username"
-    2 - Clicar no user criado, aba Credentials, criar uma senha. Não deixar marcado a aba Temporary
-
+#### Menu: **Users**
+1. Crie um novo usuário:
+   - Preencha o campo **Username**, **Email** e **First Name** e **Last Name**.
+2. Após criar o usuário:
+   - Acesse a aba **Credentials**.
+   - Defina uma senha para o usuário.
+   - Certifique-se de **não marcar** a opção **Temporary**.
 
 # Teste via cURL
 
-[!NOTE]
+> [!NOTE]
 > Para obter o client_id e client_secret, acesse o menu Clients, selecione o client e copie o client_id da aba de Settings e client_secret da aba Credentials
 
 ```curl

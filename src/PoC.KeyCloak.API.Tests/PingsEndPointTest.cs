@@ -21,7 +21,7 @@ namespace PoC.KeyCloak.API.Tests
             using var client = _factory.CreateClient();
 
             // Act
-            var response = await client.GetAsync("/ping-pong-test");
+            var response = await client.GetAsync("/api/pings/ping-pong-test");
 
             // Assert
             response.EnsureSuccessStatusCode();
@@ -41,7 +41,7 @@ namespace PoC.KeyCloak.API.Tests
             var client = _factory.CreateClient();
 
             // Act
-            var response = await client.GetAsync("/ping-pong-test");
+            var response = await client.GetAsync("/api/pings/ping-pong-test");
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -60,7 +60,7 @@ namespace PoC.KeyCloak.API.Tests
             }).CreateClient();
 
             // Act
-            var response = await client.GetAsync("/ping-pong-test");
+            var response = await client.GetAsync("/api/pings/ping-pong-test");
 
             // Assert
             response.EnsureSuccessStatusCode();

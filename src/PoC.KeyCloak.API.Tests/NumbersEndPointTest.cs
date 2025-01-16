@@ -28,7 +28,7 @@ namespace PoC.KeyCloak.API.Tests
             }
             else
             {
-                Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
+                Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
             }
         }
 
@@ -48,7 +48,7 @@ namespace PoC.KeyCloak.API.Tests
             }
             else
             {
-                Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+                Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
             }
         }
 

@@ -33,9 +33,9 @@ on:
         description: 'Run Unit Tests'
         required: false
         default: true
-      snyc:
+      snyk:
         type: boolean
-        description: 'Snyc.io'
+        description: 'Snyk.io'
         required: false
         default: true
       msg-canal-deploy:
@@ -163,7 +163,7 @@ jobs:
       - name: 🍵 Restore dependencies
         run: dotnet restore ./src/PoC.KeyCloak.sln
 
-      - name: 🍵 Snyc Setup
+      - name: 🍵 Snyk Setup
         uses: snyk/actions/setup@master
 
       - name: 🍵 Run Snyk to check for vulnerabilities

@@ -59,9 +59,11 @@ jobs:
       now: ${{ steps.get-env.outputs.NOW }}
     runs-on: ubuntu-latest
     timeout-minutes: 4
-    permissions: write-all
+    permissions:
+      contents: read 
+      security-events: write
+      
     steps:
-
       - name: Get Environment
         id: get-env
         run: |
